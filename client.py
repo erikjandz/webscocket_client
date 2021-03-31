@@ -1,16 +1,16 @@
 import socket
-import threading
 
 # Some global variables
 HEADER = 64
 PORT = 5050
 FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "!DISCONNECT"
-SERVER = "192.168.99.1"
+SERVER = "86.95.5.74"
 ADDR = (SERVER, PORT)
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect(ADDR)
+print("[CONNECTED] connected to server...")
 
 
 def writeFile(content):
@@ -23,6 +23,7 @@ def handle_server():
     while True:
         message = client.recv(2048).decode(FORMAT)
         writeFile(message)
+        print("[FILE UPDATED] client.txt got updated.")
 
 
 def send(msg):
@@ -32,13 +33,12 @@ def send(msg):
     send_length += b' ' * (HEADER - len(send_length))
     client.send(send_length)
     client.send(message)
-    writeFile(client.recv(2048).decode(FORMAT))
+    print("[MESSAGE SENT] message sent to server.")
 
 
-send("Hello World!")
+send("Connected")
+writeFile(client.recv(2048).decode(FORMAT))
 
-# start a thread to listen to the server and update the client.txt
-thread = threading.Thread(target=handle_server)
-thread.start()
+handle_server()
 
 # send(DISCONNECT_MESSAGE)
